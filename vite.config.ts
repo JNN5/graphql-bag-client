@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
-  base: 'https://jnn5.github.io/graphql-bag-client/',
+  base: '/graphql-bag-client/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
