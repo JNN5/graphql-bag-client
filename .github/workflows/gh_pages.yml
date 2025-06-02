@@ -39,7 +39,10 @@ jobs:
         run: |
           echo "STORE_PATH=$(pnpm store path | tr -d '\n')" >> $GITHUB_ENV
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v4
+        with:
+          enablement: true
       - name: Install dependencies
         run: pnpm install
       - name: Build
@@ -47,7 +50,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: dist
 
   deploy:
     environment:
