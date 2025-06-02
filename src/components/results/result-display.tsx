@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, Loader2, Info } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MutationResult } from '@/lib/types';
