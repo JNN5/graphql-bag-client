@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { Loader2, Package, Clock, User, MessageSquare, Tag } from 'lucide-react';
+import Barcode from 'react-barcode';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -118,13 +119,17 @@ const SampleBags = () => {
                               <span className="text-muted-foreground">Journey:</span>
                               <p className="font-medium">{bag.bag_journey}</p>
                             </div>
-                            <div>
-                              <span className="text-muted-foreground">Bag Tag - Last 5 Digits:</span>
-                              <p className="font-medium">{bag.bag_tag_last_five}</p>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Last Process:</span>
-                              <p className="font-medium">{formatDate(bag.last_process_ts)}</p>
+                            <div className="col-span-2">
+                              <div className="flex justify-center bg-white p-2 rounded-md">
+                                <Barcode 
+                                  value={bag.bag_tag_no} 
+                                  width={3}
+                                  height={80}
+                                  fontSize={12}
+                                  margin={5}
+                                  displayValue={true}
+                                />
+                              </div>
                             </div>
                           </div>
 
