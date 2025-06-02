@@ -111,16 +111,16 @@ const SampleBags = () => {
 
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                              <span className="text-muted-foreground">Flight:</span>
-                              <p className="font-medium">{bag.flight_no}</p>
+                              <span className="text-muted-foreground">Flight ID:</span>
+                              <p className="font-medium">{`${bag.scheduled_date}_${bag.flight_no}`}</p>
                             </div>
                             <div>
                               <span className="text-muted-foreground">Journey:</span>
                               <p className="font-medium">{bag.bag_journey}</p>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Scheduled:</span>
-                              <p className="font-medium">{formatDate(bag.scheduled_date)}</p>
+                              <span className="text-muted-foreground">Bag Tag - Last 5 Digits:</span>
+                              <p className="font-medium">{bag.bag_tag_last_five}</p>
                             </div>
                             <div>
                               <span className="text-muted-foreground">Last Process:</span>

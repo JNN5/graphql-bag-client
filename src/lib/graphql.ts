@@ -26,31 +26,45 @@ const QUERY_SAMPLE_BAGS = `
       flight_no
       scheduled_date
       bag_tag_no
-      bag_tag_last_five
       bag_status
       bag_journey
+      bag_tag_last_five
       last_process_ts
-      last_user_update_ts {
-        timestamp
-        userId
-      }
-      container_sheet_id
-      cargo_hold_number
-      is_gatebag
-      cargo_hold
-      comment
-      message_history {
-        ts
-        message
-        message_type
-        bag_status
-      }
-      mast_bpm_history
-      loading_sequence
-      bt_number
     }
   }
 `;
+
+// const QUERY_SAMPLE_BAGS = `
+//   query {
+//     getTenBags {
+//       flight_no
+//       scheduled_date
+//       bag_tag_no
+//       bag_tag_last_five
+//       bag_status
+//       bag_journey
+//       last_process_ts
+//       last_user_update_ts {
+//         timestamp
+//         userId
+//       }
+//       container_sheet_id
+//       cargo_hold_number
+//       is_gatebag
+//       cargo_hold
+//       comment
+//       message_history {
+//         ts
+//         message
+//         message_type
+//         bag_status
+//       }
+//       mast_bpm_history
+//       loading_sequence
+//       bt_number
+//     }
+//   }
+// `;
 
 export async function executeGraphQLMutation(
   endpoint: string,

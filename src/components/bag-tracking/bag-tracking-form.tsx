@@ -118,7 +118,7 @@ const BagTrackingForm = ({ onSubmit, isLoading }: BagTrackingFormProps) => {
               <AccordionItem value="optional-fields">
                 <AccordionTrigger className="text-sm font-medium">
                   <div className="flex items-center gap-1.5">
-                    <Info className="h-4 w-4" />
+                    <Info className="h-4 w-4 text-white" />
                     <span className="text-white">Optional Fields</span>
                   </div>
                 </AccordionTrigger>
@@ -129,7 +129,7 @@ const BagTrackingForm = ({ onSubmit, isLoading }: BagTrackingFormProps) => {
                       name="journey"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Journey Type</FormLabel>
+                          <FormLabel>Journey</FormLabel>
                           <Select 
                             onValueChange={field.onChange} 
                             defaultValue={field.value || "FLYCRUISE"}
