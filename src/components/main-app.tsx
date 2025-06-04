@@ -5,6 +5,8 @@ import BagTrackingForm from '@/components/bag-tracking/bag-tracking-form';
 import SampleBags from '@/components/bag-tracking/sample-bags';
 import ApiHeader from '@/components/layout/api-header';
 import ResultDisplay from '@/components/results/result-display';
+import TrackedBags from '@/components/bag-tracking/tracked-bags';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { executeGraphQLMutation } from '@/lib/graphql';
 
 // Types
@@ -49,32 +51,42 @@ const MainApp = () => {
       
       <main className="container mx-auto py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-3xl font-bold mb-8 text-center">Bag Tracking System</h1>
-          </motion.div>
+          </motion.div> */}
 
-          <div className="grid gap-8 lg:grid-cols-[1fr_1fr] xl:gap-12">
-            <div className="space-y-8">
-              <BagTrackingForm onSubmit={handleSubmit} isLoading={isLoading} />
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={result ? 'result' : 'no-result'}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <ResultDisplay result={result} error={error} isLoading={isLoading} />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-            
-            <SampleBags />
-          </div>
+          <Tabs defaultValue="track" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 gap-0">
+              <TabsTrigger value="track" className="data-[state=inactive]:text-white">Track Bag</TabsTrigger>
+              <TabsTrigger value="view" className="data-[state=inactive]:text-white">View Tracked Bags</TabsTrigger>
+            </TabsList>
+            <TabsContent value="track">
+              <div className="grid gap-8 lg:grid-cols-[1fr_1fr] xl:gap-12">
+                <div className="space-y-8">
+                  <BagTrackingForm onSubmit={handleSubmit} isLoading={isLoading} />
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={result ? 'result' : 'no-result'}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <ResultDisplay result={result} error={error} isLoading={isLoading} />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+                <SampleBags />
+              </div>
+            </TabsContent>
+            <TabsContent value="view" className="min-h-[800px]">
+              <TrackedBags />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>

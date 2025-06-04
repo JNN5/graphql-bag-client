@@ -1,4 +1,4 @@
-import { GraphQLVariables, MutationResult, SampleBagsResult } from './types';
+import { GraphQLVariables, MutationResult, SampleBagsResult } from "./types";
 
 const MUTATION = `
   mutation saveTrackingPointForMultipleBags(
@@ -73,14 +73,14 @@ export async function executeGraphQLMutation(
 ): Promise<MutationResult> {
   try {
     const response = await fetch(endpoint, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': `${apiKey}`
+        "Content-Type": "application/json",
+        "X-API-KEY": `${apiKey}`,
       },
       body: JSON.stringify({
         query: MUTATION,
-        variables
+        variables,
       }),
     });
 
@@ -90,17 +90,17 @@ export async function executeGraphQLMutation(
     }
 
     const result = await response.json();
-    
+
     if (result.errors && result.errors.length > 0) {
       throw new Error(result.errors[0].message);
     }
-    
+
     return result as MutationResult;
   } catch (error) {
     if (error instanceof Error) {
       throw error;
     }
-    throw new Error('An unexpected error occurred');
+    throw new Error("An unexpected error occurred");
   }
 }
 
@@ -110,13 +110,13 @@ export async function fetchSampleBags(
 ): Promise<SampleBagsResult> {
   try {
     const response = await fetch(endpoint, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': `${apiKey}`
+        "Content-Type": "application/json",
+        "X-API-KEY": `${apiKey}`,
       },
       body: JSON.stringify({
-        query: QUERY_SAMPLE_BAGS
+        query: QUERY_SAMPLE_BAGS,
       }),
     });
 
@@ -126,16 +126,47 @@ export async function fetchSampleBags(
     }
 
     const result = await response.json();
-    
+
     if (result.errors && result.errors.length > 0) {
       throw new Error(result.errors[0].message);
     }
-    
+
     return result as SampleBagsResult;
   } catch (error) {
     if (error instanceof Error) {
       throw error;
     }
-    throw new Error('An unexpected error occurred');
+    throw new Error("An unexpected error occurred");
   }
+}
+
+export async function executeGraphQLQuery(
+  apiUrl: string,
+  apiKey: string,
+  query: string,
+  variables?: Record<string, unknown>
+) {
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+    },
+    body: JSON.stringify({
+      query,
+      variables,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+
+  return result;
 }
