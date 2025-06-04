@@ -73,16 +73,14 @@ const TrackedBags = () => {
 
   const getStatusColor = (status: string) => {
     switch (status.toUpperCase()) {
-      case 'DELIVERED':
+      case 'SCREENING_PASSED':
         return 'bg-green-100 text-green-800';
-      case 'IN_TRANSIT':
-        return 'bg-blue-100 text-blue-800';
-      case 'DELAYED':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'LOST':
+      case 'AT_MBCCS':
+        return 'bg-gray-100 text-gray-800';
+      case 'SCREENING_FAILED':
         return 'bg-red-100 text-red-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-blue-100 text-gray-800';
     }
   };
 
@@ -132,20 +130,13 @@ const TrackedBags = () => {
                 <CardContent className="p-4">
                   <div className="space-y-3">
                     <div className="space-y-2">
+                      {/* <div className="text-sm text-gray-500">{bag.bag_id}</div> */}
                       <div className="font-medium">{bag.bag_id.split('_')[2]}</div>
-                      <div className="text-sm">Flight ID: {bag.bag_id.split('_')[0]}</div>
-                      <div className="text-sm text-gray-500">{bag.bag_id}</div>
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(bag.status)}`}>
+                      <div className="text-sm">Flight ID: {bag.bag_id.split('_')[0]}_{bag.bag_id.split('_')[1]}</div>
+                      <div className={`px-2 py-1 rounded-md text-xs font-medium ${getStatusColor(bag.status)}`}>
                         {bag.status}
                       </div>
-                      <div className="text-sm text-gray-500">
-                        Journey: {bag.journey}
-                      </div>
-                      {/* <div className="text-sm text-gray-500">
-                        Last updated: {new Date(bag.last_updated).toLocaleString()}
-                      </div> */}
                     </div>
-
                     {bag.bag_images.map( image => (
                       <div className="relative w-full h-40 rounded-lg overflow-hidden">
                         <img
