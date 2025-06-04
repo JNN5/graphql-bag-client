@@ -134,6 +134,7 @@ const TrackedBags = () => {
                     <div className="space-y-2">
                       <div className="font-medium">{bag.bag_id.split('_')[2]}</div>
                       <div className="text-sm">Flight ID: {bag.bag_id.split('_')[0]}</div>
+                      <div className="text-sm text-gray-500">{bag.bag_id}</div>
                       <div className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(bag.status)}`}>
                         {bag.status}
                       </div>
