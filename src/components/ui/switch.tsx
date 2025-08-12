@@ -27,7 +27,7 @@ const Label = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <label
     className={cn(
-      'Label text-white text-[15px] leading-none select-none',
+      'Label text-white text-[15px]  w-[42px] leading-none select-none',
       className
     )}
     {...props}
