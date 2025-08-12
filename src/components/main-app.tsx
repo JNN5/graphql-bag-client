@@ -7,37 +7,57 @@ import ApiHeader from '@/components/layout/api-header';
 import ResultDisplay from '@/components/results/result-display';
 import TrackedBags from '@/components/bag-tracking/tracked-bags';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { executeGraphQLMutation } from '@/lib/graphql';
+import { 
+  startTrackingPointJourney, 
+  saveTrackingPoint 
+} from '@/lib/graphql';
 
 // Types
-import { BagTrackingData, MutationResult } from '@/lib/types';
+import { BagTrackingData, GraphQLResult, TrackingPoint } from '@/lib/types';
 
 const MainApp = () => {
   const { apiUrl, apiKey } = useApiSetup();
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<MutationResult | null>(null);
+  const [result, setResult] = useState<GraphQLResult<{[key: string]: TrackingPoint | TrackingPoint[]}> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (data: BagTrackingData) => {
+  const handleSubmit = async (data: BagTrackingData, isStartTracking: boolean) => {
     setIsLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      // Prepare the variables for GraphQL mutation
-      const variables = {
-        journey: data.journey || "FLYCRUISE",
-        status: data.status || "EXPECTED",
-        bags: [{
-          bag_tag_no: data.bagTagNumber,
-          flight_id: data.flightId
-        }],
-        required_inputs: JSON.stringify({ cruise_id: data.cruiseNumber })
-      };
+      let response;
 
-      // Execute the GraphQL mutation
-      const response = await executeGraphQLMutation(apiUrl, apiKey, variables);
-      setResult(response);
+      // Handle different tracking modes with appropriate mutations
+      if (isStartTracking) {
+        // Use MUTATION_START_TRACKING_POINT_JOURNEY
+        response = await startTrackingPointJourney(
+          apiUrl,
+          apiKey,
+          data.bagTagNumber,
+          data.journey || "FLYCRUISE",
+          data.status || "EXPECTED",
+          data.origin || data.flightId || "",
+          data.destination || data.cruiseNumber || "",
+          // JSON.stringify({ cruise_id: data.cruiseNumber })
+        );
+        setResult(response as GraphQLResult<{startTrackingPointJourney: TrackingPoint}>);
+      } else {
+        // Use MUTATION_SAVE_TRACKING_POINT
+        response = await saveTrackingPoint(
+          apiUrl,
+          apiKey,
+          data.journey || "FLYCRUISE",
+          data.status || "EXPECTED",
+          data.bagTagNumber,
+          data.origin,
+          data.destination,
+          data.vehicle_number,
+          // JSON.stringify({ cruise_id: data.cruiseNumber })
+        );
+        setResult(response as GraphQLResult<{saveTrackingPoint: TrackingPoint}>);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {

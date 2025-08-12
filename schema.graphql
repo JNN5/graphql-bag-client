@@ -1,0 +1,238 @@
+type TrackingPointConfig @aws_iam @aws_api_key @aws_cognito_user_pools {
+	journey: String
+	status: String
+	category: String
+	menu_item: String
+	next_tracking_points: [String]
+	required_inputs: AWSJSON
+	is_initial_state: Boolean!
+	cognito_group: String
+	ui: JourneyUI
+}
+
+type TrackingPoint @aws_iam @aws_api_key @aws_cognito_user_pools {
+	bag_tag_no: String!
+	tracking_point_id: String!
+	journey: String!
+	status: String!
+	location: String
+	bpm: String!
+	timestamp: String!
+	reverted: Boolean!
+	origin: String
+	destination: String
+	vehicle_action: String
+	vehicle_number: String
+	tracked_by: String
+	additional_data: AWSJSON
+}
+
+type TrackedBag @aws_iam @aws_api_key @aws_cognito_user_pools {
+	bag_tag_no: String!
+	journey: String!
+	status: String!
+	location: String
+	updated_by: String
+	last_updated: String!
+	origin: String!
+	destination: String!
+	vehicle_number: String
+	additional_data: AWSJSON
+	bag_images: [BagImage]
+}
+
+
+type Vehicle @aws_iam @aws_api_key @aws_cognito_user_pools {
+	vehicle_number: String
+	journey: String
+}
+
+enum VehicleAction {
+	LOADING
+	UNLOADING
+	KEEPING
+}
+
+input TrackedBagInput {
+	bag_tag_no: String!
+	journey: String!
+	status: String!
+	location: String
+	origin: String!
+	destination: String!
+	vehicle_number: String
+	last_updated: String!
+	updated_by: String
+	additional_data: AWSJSON
+}
+
+
+input BagInput {
+	bag_tag_no: String!,
+	origin: String!,
+	destination: String!,
+	vehicle_number: String,
+}
+
+input BagImageInput {
+	bag_tag_no: String!,
+	journey: String!,
+	origin: String!,
+	destination: String!,
+	name: String!
+	type: String!
+}
+
+type BagImage @aws_iam @aws_api_key @aws_cognito_user_pools {
+	name: String!
+	url: String!
+	type: String!
+}
+
+type MenuItem {
+	journey: String!
+	status: String!
+	category: String!
+	menu_item: String!
+	cognito_group: String
+	ui: JourneyUI
+	flow: JourneyFlow
+}
+
+type MessageHistoryFormat @aws_iam @aws_api_key @aws_cognito_user_pools {
+  ts: String
+  message: String
+  message_type: String
+  bag_status: String
+}
+
+type LastUserUpdateTS @aws_iam @aws_api_key @aws_cognito_user_pools {
+  timestamp: String
+  userId: String
+}
+
+type Bag @aws_iam @aws_api_key @aws_cognito_user_pools {
+  flight_no: String!
+  scheduled_date: String!
+  bag_tag_no: String!
+  bag_tag_last_five: String!
+  bag_status: String!
+  bag_journey: String!
+  last_process_ts: String!
+  last_user_update_ts: LastUserUpdateTS
+  container_sheet_id: String
+  cargo_hold_number: String
+  is_gatebag: String
+  cargo_hold: String
+  comment: [String]
+  message_history: [MessageHistoryFormat]
+  mast_bpm_history: [String]
+  loading_sequence: String
+  bt_number: String
+}
+
+type JourneyFlow @aws_iam @aws_api_key @aws_cognito_user_pools{
+    next_tracking_points: [String]
+    is_initial: Boolean!
+    vehicle_action: VehicleAction
+    no_of_images: Int
+}
+
+type JourneyUI @aws_iam @aws_api_key @aws_cognito_user_pools{
+    icon: String
+    color: String
+    text_color: String
+    button_text: String
+    category_text: String
+}
+
+type Journey @aws_iam @aws_api_key @aws_cognito_user_pools {
+    journey: String
+    status: String
+    status_name: String
+    location: String
+    flow: JourneyFlow
+    ui: JourneyUI
+    read_access: [String]
+    full_access: [String]
+}
+
+type Mutation {
+	startTrackingPointJourney(
+		bag_tag_no: String!,
+		journey: String!,
+		status: String!,
+		origin: String!,
+		destination: String!,
+		required_inputs: AWSJSON
+	): TrackingPoint @aws_iam @aws_api_key @aws_cognito_user_pools
+	generateBagId(
+		journey: String!,
+		status: String!,
+		required_inputs: AWSJSON
+	): TrackingPoint @aws_iam @aws_api_key @aws_cognito_user_pools
+	saveTrackingPoint(
+		journey: String!,
+		status: String!,
+		bag_tag_no: String!,
+		origin: String,
+		destination: String,
+		vehicle_number: String,
+		required_inputs: AWSJSON
+	): TrackingPoint @aws_iam @aws_api_key @aws_cognito_user_pools
+	saveTrackingPointForMultipleBags(
+		journey: String!,
+		status: String!,
+		bags: [BagInput!],
+		required_inputs: AWSJSON
+	): [TrackingPoint] @aws_iam @aws_api_key @aws_cognito_user_pools
+	revertTrackingPoint(
+		bag_tag_no: String!,
+		tracking_point_id: String!
+	): TrackingPoint @aws_iam @aws_api_key @aws_cognito_user_pools
+	massUpdateTrackingPointStatus(
+		journey: String!,
+		status: String!,
+		new_status: String!,
+	): [TrackingPoint] @aws_iam @aws_api_key @aws_cognito_user_pools
+	updateTrackingPointStatusRemoved(
+		bag_tag_no: String!,
+		journey: String!,
+		origin: String,
+		destination: String,
+	): TrackingPoint @aws_iam @aws_api_key @aws_cognito_user_pools
+	saveBagImages(
+		bag_images: [BagImageInput!]
+	): [BagImage] @aws_iam @aws_api_key @aws_cognito_user_pools
+	saveVehicle(
+		vehicle_number: String!,
+		journey: String,
+	): Vehicle @aws_iam @aws_api_key @aws_cognito_user_pools
+	saveTrackingPointsForBagsOnVehicle(
+		vehicle_number: String!,
+		journey: String!,
+		status: String!,
+	): [TrackingPoint] @aws_iam @aws_api_key @aws_cognito_user_pools
+	updateTrackedBag(
+		bag: TrackedBagInput!
+	): TrackedBag @aws_iam @aws_api_key @aws_cognito_user_pools
+}
+
+type Query @aws_iam @aws_api_key @aws_cognito_user_pools {
+	getTrackingPointsConfig: [TrackingPointConfig]
+	getTrackingPointsConfigByJourney(journey: String!): [TrackingPointConfig]
+	getTrackingPointsConfigByCategory(category: String!): [TrackingPointConfig]
+	getTrackingPointById(bag_tag_no: String!, tracking_point_id: String!): TrackingPoint
+	getTrackingPointsByBagTagNo(bag_tag_no: String!, journey: String!, origin: String!, destination: String!): [TrackingPoint]
+	getTrackedBagsByDate(journey: String!, date: String!): [TrackedBag]
+	getTrackedBags(journey: String!, bags: [BagInput!]): [TrackedBag]
+	getTrackedBagsByBagTagNo(bag_tag_no: String!, journey: String!): [TrackedBag]
+	getTenBags: [Bag] # For testing purposes
+	getVehicle(journey: String): [Vehicle]
+	getMenuItems: [MenuItem!]
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+}

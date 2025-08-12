@@ -9,11 +9,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useApiSetup } from '@/contexts/api-setup-context';
 import { fetchSampleBags } from '@/lib/graphql';
-import { NewBag } from '@/lib/types';
+import { Bag } from '@/lib/types';
 
 const SampleBags = () => {
   const { apiUrl, apiKey } = useApiSetup();
-  const [bags, setBags] = useState<NewBag[]>([]);
+  const [bags, setBags] = useState<Bag[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +32,9 @@ const SampleBags = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'N/A';
+    
     try {
       return format(new Date(dateString), 'MMM d, yyyy HH:mm');
     } catch {
@@ -140,7 +142,7 @@ const SampleBags = () => {
                                 <span className="font-medium">Message History</span>
                               </div>
                               <ScrollArea className="h-[100px] w-full rounded-md border p-2">
-                                {bag.message_history.map((msg, idx) => (
+                                {bag.message_history?.map((msg, idx) => (
                                   <div key={idx} className="mb-2 last:mb-0 text-sm">
                                     <div className="flex items-center gap-2">
                                       <Clock className="h-3 w-3 text-muted-foreground" />

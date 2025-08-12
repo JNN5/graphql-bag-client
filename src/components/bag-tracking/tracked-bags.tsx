@@ -9,17 +9,12 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { executeGraphQLQuery } from '@/lib/graphql';
+import { getTrackedBagsByDate } from '@/lib/graphql';
 import { useApiSetup } from '@/contexts/api-setup-context';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-interface TrackedBag {
-  bag_id: string;
-  journey: string;
-  status: string;
-  last_updated: string;
-  bag_images: { url: string }[];
-}
+// Using the TrackedBag interface from types.ts
+import { TrackedBag as TrackedBagType } from '@/lib/types';
 
 const JOURNEY_OPTIONS = [
   { value: 'FLYCRUISE', label: 'Fly Cruise' },
@@ -28,7 +23,7 @@ const JOURNEY_OPTIONS = [
 
 const TrackedBags = () => {
   const { apiUrl, apiKey } = useApiSetup();
-  const [bags, setBags] = useState<TrackedBag[]>([]);
+  const [bags, setBags] = useState<TrackedBagType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [journey, setJourney] = useState('FLYCRUISE');
   const [error, setError] = useState<string | null>(null);
@@ -39,27 +34,18 @@ const TrackedBags = () => {
 
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
-      const query = `
-        query GetTrackedBags($journey: String!, $date: String!) {
-          getTrackedBagsByDate(journey: $journey, date: $date) {
-            bag_id
-            journey
-            status
-            last_updated
-            bag_images {
-                url
-            }
-          }
-        }
-      `;
-
-      const variables = {
-        journey,
-        date: today,
+      
+      const response = await getTrackedBagsByDate(apiUrl, apiKey, journey, today) as {
+        data?: {
+          getTrackedBagsByDate: TrackedBagType[];
+        };
       };
-
-      const response = await executeGraphQLQuery(apiUrl, apiKey, query, variables);
-      setBags(response.data.getTrackedBagsByDate);
+      
+      if (response.data && response.data.getTrackedBagsByDate) {
+        setBags(response.data.getTrackedBagsByDate);
+      } else {
+        setError('No tracked bags data received');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch tracked bags');
     } finally {
@@ -126,22 +112,24 @@ const TrackedBags = () => {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {bags.map((bag) => (
-              <Card key={bag.bag_id}>
+              <Card key={bag.bag_tag_no}>
                 <CardContent className="p-4">
                   <div className="space-y-3">
                     <div className="space-y-2">
-                      {/* <div className="text-sm text-gray-500">{bag.bag_id}</div> */}
-                      <div className="font-medium">{bag.bag_id.split('_')[2]}</div>
-                      <div className="text-sm">Flight ID: {bag.bag_id.split('_')[0]}_{bag.bag_id.split('_')[1]}</div>
+                      <div className="font-medium">{bag.bag_tag_no}</div>
+                      <div className="text-sm">Journey: {bag.journey}</div>
+                      <div className="text-sm">Origin: {bag.origin} → Destination: {bag.destination}</div>
                       <div className={`px-2 py-1 rounded-md text-xs font-medium ${getStatusColor(bag.status)}`}>
                         {bag.status}
                       </div>
+                      {bag.vehicle_number && <div className="text-sm">Vehicle: {bag.vehicle_number}</div>}
+                      {bag.location && <div className="text-sm">Location: {bag.location}</div>}
                     </div>
-                    {bag.bag_images.map( image => (
-                      <div className="relative w-full h-40 rounded-lg overflow-hidden">
+                    {bag.bag_images?.map(image => (
+                      <div key={image.url} className="relative w-full h-40 rounded-lg overflow-hidden">
                         <img
                           src={image.url}
-                          alt={`Bag ${bag.bag_id}`}
+                          alt={`Bag ${bag.bag_tag_no}`}
                           className="max-w-80 object-cover"
                         />
                       </div>
