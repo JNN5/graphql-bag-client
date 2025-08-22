@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { Loader2, Package, Clock, User, MessageSquare, Tag } from 'lucide-react';
-import Barcode from 'react-barcode';
+import Barcode from '@/components/ui/barcode';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -124,12 +124,7 @@ const SampleBags = () => {
                             <div className="col-span-2">
                               <div className="flex justify-center bg-white p-2 rounded-md">
                                 <Barcode 
-                                  value={bag.bag_tag_no} 
-                                  width={3}
-                                  height={80}
-                                  fontSize={12}
-                                  margin={5}
-                                  displayValue={true}
+                                  text={bag.bag_tag_no}
                                 />
                               </div>
                             </div>
