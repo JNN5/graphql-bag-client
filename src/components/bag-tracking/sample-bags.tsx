@@ -122,7 +122,7 @@ const SampleBags = () => {
                               <p className="font-medium">{bag.bag_journey}</p>
                             </div>
                             <div className="col-span-2">
-                              <div className="flex justify-center bg-white p-2 rounded-md">
+                              <div className="flex w-full justify-center bg-white p-2 rounded-md">
                                 <Barcode 
                                   text={bag.bag_tag_no}
                                 />

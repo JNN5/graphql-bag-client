@@ -15,7 +15,7 @@ export default function Barcode({text}: BarcodeProps) {
         bwipjs.toCanvas(canvas, {
           bcid:        'interleaved2of5',
           text:        text,
-          scale:       window.devicePixelRatio,
+          scale:       2.5,
           height:      10,
           includetext: true,
           textxalign:  'center',
