@@ -34,17 +34,17 @@ const ResultDisplay = ({ result, error, isLoading }: ResultDisplayProps) => {
 };
 
 const EmptyState = () => (
-  <Card className="border-border shadow-md h-full flex flex-col justify-center">
+  <Card className="border-border h-full flex flex-col justify-center p-4 rounded-md glass text-white">
     <CardHeader className="text-center pb-2">
-      <CardTitle className="text-xl">Results</CardTitle>
+      <CardTitle className="text-xl text-gray-300 ">Results</CardTitle>
       <CardDescription>
         Submit the form to see tracking results
       </CardDescription>
     </CardHeader>
     <CardContent className="flex-1 flex items-center justify-center p-6">
       <div className="text-center p-8">
-        <Info className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
-        <p className="mt-4 text-muted-foreground">
+        <Info className="mx-auto h-12 w-12 text-gray-300 opacity-50" />
+        <p className="mt-4 text-gray-300 ">
           Tracking information will appear here after submission
         </p>
       </div>
@@ -60,7 +60,8 @@ const LoadingState = () => (
       </CardTitle>
     </CardHeader>
     <CardContent className="flex flex-col items-center justify-center p-12">
-      <Loader2 className="h-16 w-16 text-primary animate-spin mb-4" />
+      <Loader2 className="h-16 w-16 
+      animate-spin mb-4" />
       <p className="text-center text-muted-foreground mt-4">
         Sending request to GraphQL API...
       </p>

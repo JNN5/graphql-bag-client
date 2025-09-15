@@ -1,77 +1,91 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useApiSetup } from '@/contexts/api-setup-context';
-import BagTrackingForm from '@/components/bag-tracking/bag-tracking-form';
-import SampleBags from '@/components/bag-tracking/sample-bags';
-import ApiHeader from '@/components/layout/api-header';
-import ResultDisplay from '@/components/results/result-display';
-import TrackedBags from '@/components/bag-tracking/tracked-bags';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  startTrackingPointJourney, 
-  saveTrackingPoint 
-} from '@/lib/graphql';
+import { useState } from "react";
+
+import { useApiSetup } from "@/contexts/api-setup-context";
+import BagTrackingForm from "@/components/bag-tracking/bag-tracking-form";
+import SampleBags from "@/components/bag-tracking/sample-bags";
+import ApiHeader from "@/components/layout/api-header";
+import ResultDisplay from "@/components/results/result-display";
+import TrackedBags from "@/components/bag-tracking/tracked-bags";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { startTrackingPointJourney, saveTrackingPoint } from "@/lib/graphql";
 
 // Types
-import { BagTrackingData, GraphQLResult, TrackingPoint } from '@/lib/types';
+import { BagTrackingData, GraphQLResult, TrackingPoint } from "@/lib/types";
 
 const MainApp = () => {
-  const { apiUrl, apiKey } = useApiSetup();
-  const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<GraphQLResult<{[key: string]: TrackingPoint | TrackingPoint[]}> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+    const { apiUrl, apiKey } = useApiSetup();
+    const [isLoading, setIsLoading] = useState(false);
+    const [result, setResult] = useState<GraphQLResult<{
+        [key: string]: TrackingPoint | TrackingPoint[];
+    }> | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (data: BagTrackingData, isStartTracking: boolean) => {
-    setIsLoading(true);
-    setError(null);
-    setResult(null);
+    const handleSubmit = async (
+        data: BagTrackingData,
+        isStartTracking: boolean,
+    ) => {
+        setIsLoading(true);
+        setError(null);
+        setResult(null);
 
-    try {
-      let response;
+        try {
+            let response;
 
-      // Handle different tracking modes with appropriate mutations
-      if (isStartTracking) {
-        // Use MUTATION_START_TRACKING_POINT_JOURNEY
-        response = await startTrackingPointJourney(
-          apiUrl,
-          apiKey,
-          data.bagTagNumber,
-          data.journey || "FLYCRUISE",
-          data.status || "EXPECTED",
-          data.origin || data.flightId || "",
-          data.destination || data.cruiseNumber || "",
-          // JSON.stringify({ cruise_id: data.cruiseNumber })
-        );
-        setResult(response as GraphQLResult<{startTrackingPointJourney: TrackingPoint}>);
-      } else {
-        // Use MUTATION_SAVE_TRACKING_POINT
-        response = await saveTrackingPoint(
-          apiUrl,
-          apiKey,
-          data.journey || "FLYCRUISE",
-          data.status || "EXPECTED",
-          data.bagTagNumber,
-          data.origin,
-          data.destination,
-          data.vehicle_number,
-          // JSON.stringify({ cruise_id: data.cruiseNumber })
-        );
-        setResult(response as GraphQLResult<{saveTrackingPoint: TrackingPoint}>);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+            // Handle different tracking modes with appropriate mutations
+            if (isStartTracking) {
+                // Use MUTATION_START_TRACKING_POINT_JOURNEY
+                response = await startTrackingPointJourney(
+                    apiUrl,
+                    apiKey,
+                    data.bagTagNumber,
+                    data.journey || "FLYCRUISE",
+                    data.status || "EXPECTED",
+                    data.origin || data.flightId || "",
+                    data.destination || data.cruiseNumber || "",
+                    // JSON.stringify({ cruise_id: data.cruiseNumber })
+                );
+                setResult(
+                    response as GraphQLResult<{
+                        startTrackingPointJourney: TrackingPoint;
+                    }>,
+                );
+            } else {
+                // Use MUTATION_SAVE_TRACKING_POINT
+                response = await saveTrackingPoint(
+                    apiUrl,
+                    apiKey,
+                    data.journey || "FLYCRUISE",
+                    data.status || "EXPECTED",
+                    data.bagTagNumber,
+                    data.origin,
+                    data.destination,
+                    data.vehicle_number,
+                    // JSON.stringify({ cruise_id: data.cruiseNumber })
+                );
+                setResult(
+                    response as GraphQLResult<{
+                        saveTrackingPoint: TrackingPoint;
+                    }>,
+                );
+            }
+        } catch (err) {
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "An unknown error occurred",
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <ApiHeader />
-      
-      <main className="container mx-auto py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* <motion.div
+    return (
+        <div className="min-h-screen">
+            <ApiHeader />
+
+            <main className="container mx-auto py-8 px-4">
+                <div className="max-w-6xl mx-auto">
+                    {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -79,38 +93,47 @@ const MainApp = () => {
             <h1 className="text-3xl font-bold mb-8 text-center">Bag Tracking System</h1>
           </motion.div> */}
 
-          <Tabs defaultValue="track" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 gap-0">
-              <TabsTrigger value="track" className="data-[state=inactive]:text-white">Track Bag</TabsTrigger>
-              <TabsTrigger value="view" className="data-[state=inactive]:text-white">View Tracked Bags</TabsTrigger>
-            </TabsList>
-            <TabsContent value="track">
-              <div className="grid gap-8 lg:grid-cols-[1fr_1fr] xl:gap-12">
-                <div className="space-y-8">
-                  <BagTrackingForm onSubmit={handleSubmit} isLoading={isLoading} />
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={result ? 'result' : 'no-result'}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <ResultDisplay result={result} error={error} isLoading={isLoading} />
-                    </motion.div>
-                  </AnimatePresence>
+                    <Tabs defaultValue="track" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 gap-0">
+                            <TabsTrigger
+                                value="track"
+                                className="data-[state=inactive]:text-white"
+                            >
+                                Track Bag
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="view"
+                                className="data-[state=inactive]:text-white"
+                            >
+                                View Tracked Bags
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="track">
+                            <div className="grid gap-8 lg:grid-cols-[1fr_1fr] xl:gap-12">
+                                <div className="space-y-8">
+                                    <BagTrackingForm
+                                        onSubmit={handleSubmit}
+                                        isLoading={isLoading}
+                                    />
+                                    <div>
+                                        <ResultDisplay
+                                            result={result}
+                                            error={error}
+                                            isLoading={isLoading}
+                                        />
+                                    </div>
+                                </div>
+                                <SampleBags />
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="view" className="min-h-[800px]">
+                            <TrackedBags />
+                        </TabsContent>
+                    </Tabs>
                 </div>
-                <SampleBags />
-              </div>
-            </TabsContent>
-            <TabsContent value="view" className="min-h-[800px]">
-              <TrackedBags />
-            </TabsContent>
-          </Tabs>
+            </main>
         </div>
-      </main>
-    </div>
-  );
+    );
 };
 
 export default MainApp;

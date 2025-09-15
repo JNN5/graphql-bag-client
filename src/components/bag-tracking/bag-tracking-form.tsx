@@ -122,13 +122,13 @@ const BagTrackingForm = ({ onSubmit, isLoading }: BagTrackingFormProps) => {
 
   return (
     <Card className="border-border shadow-md">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+      <CardHeader className="mb-4">
+        <CardTitle className="flex items-center justify-between rounded-md glass w-full p-4">
+          <div className="flex items-center gap-2 text-white">
             <Luggage className="h-5 w-5" />
             <span>Bag Tracking Information</span>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2  text-white">
             <Switch 
               id="tracking-mode" 
               checked={isStartTracking}
@@ -141,14 +141,14 @@ const BagTrackingForm = ({ onSubmit, isLoading }: BagTrackingFormProps) => {
         </CardTitle>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="rounded-md glass text-white p-8">
         <Form {...form}>
           <form onSubmit={(e) => {
             e.preventDefault();
             const formData = form.getValues();
             handleSubmit(formData);
           }} className="space-y-6">
-            <div className="space-y-4">
+            <div className="space-y-4 ">
               <FormField
                 control={form.control}
                 name="bagTagNumber"
@@ -260,7 +260,7 @@ const BagTrackingForm = ({ onSubmit, isLoading }: BagTrackingFormProps) => {
               )}
             </div>
             
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="single" collapsible className="w-full ">
               <AccordionItem value="optional-fields">
                 <AccordionTrigger className="text-sm font-medium">
                   <div className="flex items-center gap-1.5">
@@ -332,7 +332,7 @@ const BagTrackingForm = ({ onSubmit, isLoading }: BagTrackingFormProps) => {
             
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg bg-teal-600 hover:bg-teal-600/90"
               disabled={isLoading}
             >
               {isLoading ? (

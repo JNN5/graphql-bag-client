@@ -12,7 +12,7 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light">
       <APISetupProvider>
-        <div className="min-h-screen bg-background text-foreground">
+        <div className="min-h-screen text-foreground">
           {!isConfigured ? (
             <SetupScreen onSetupComplete={() => setIsConfigured(true)} />
           ) : (

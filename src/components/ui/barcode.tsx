@@ -19,6 +19,8 @@ export default function Barcode({text}: BarcodeProps) {
           height:      10,
           includetext: true,
           textxalign:  'center',
+          barcolor:    'FFFFFF',
+          textcolor:   'FFFFFF',
         });
       }}
     />
