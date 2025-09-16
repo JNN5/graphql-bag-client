@@ -144,6 +144,7 @@ const SampleBags = () => {
                                                                 text={
                                                                     bag.bag_tag_no
                                                                 }
+                                                                scale={3}
                                                             />
                                                         </div>
                                                     </div>

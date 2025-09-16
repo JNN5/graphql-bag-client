@@ -4,9 +4,10 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export interface BarcodeProps {
     text: string;
+    scale: number;
 }
 
-export default function Barcode({ text }: BarcodeProps) {
+export default function Barcode({ text, scale }: BarcodeProps) {
     const [open, setOpen] = useState(false);
 
     const renderBarcode = useCallback(
@@ -16,7 +17,7 @@ export default function Barcode({ text }: BarcodeProps) {
                 bwipjs.toCanvas(canvas, {
                     bcid: "interleaved2of5",
                     text: text,
-                    scale: large ? 50 : 3,
+                    scale: large ? 50 : scale,
                     height: 15,
                     includetext: true,
                     textxalign: "center",
@@ -28,10 +29,11 @@ export default function Barcode({ text }: BarcodeProps) {
                 // console.error('Failed to render barcode');
             }
         },
-        [text],
+        [text, scale],
     );
 
     return (
+        <>    
         <Dialog open={open} onOpenChange={setOpen}>
             <div className="inline-block glass-white p-4" onClick={() => setOpen(true)}>
                 <canvas
@@ -48,5 +50,6 @@ export default function Barcode({ text }: BarcodeProps) {
                 </div>
             </DialogContent>
         </Dialog>
+        </>
     );
 }

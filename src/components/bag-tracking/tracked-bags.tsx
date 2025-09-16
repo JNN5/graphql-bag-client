@@ -187,6 +187,7 @@ const TrackedBags = () => {
                                                 ) && (
                                                     <Barcode
                                                         text={bag.bag_tag_no}
+                                                        scale={2}
                                                     />
                                                 )}
                                         </div>
