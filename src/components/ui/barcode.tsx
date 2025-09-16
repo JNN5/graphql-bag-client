@@ -16,8 +16,8 @@ export default function Barcode({ text }: BarcodeProps) {
                 bwipjs.toCanvas(canvas, {
                     bcid: "interleaved2of5",
                     text: text,
-                    scale: large ? 5 : 2.5,
-                    height: large ? 20 : 10,
+                    scale: large ? 50 : 3,
+                    height: 15,
                     includetext: true,
                     textxalign: "center",
                     barcolor: "000000",
@@ -39,7 +39,7 @@ export default function Barcode({ text }: BarcodeProps) {
                     className="cursor-pointer select-none"
                 />
             </div>
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-3xl">
                 <div className="flex flex-col items-center gap-4 glass-white p-4">
                     <canvas
                         ref={(c) => renderBarcode(c, true)}
