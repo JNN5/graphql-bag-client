@@ -85,14 +85,6 @@ const MainApp = () => {
 
             <main className="container mx-auto py-8 px-4">
                 <div className="max-w-6xl mx-auto">
-                    {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h1 className="text-3xl font-bold mb-8 text-center">Bag Tracking System</h1>
-          </motion.div> */}
-
                     <Tabs defaultValue="track" className="w-full">
                         <TabsList className="grid w-full grid-cols-2 gap-0">
                             <TabsTrigger
