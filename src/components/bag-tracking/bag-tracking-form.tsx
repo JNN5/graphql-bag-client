@@ -40,7 +40,8 @@ interface BagTrackingFormProps {
 }
 
 const journeyOptions = [
-  { value: 'FLYCRUISE', label: 'Fly Cruise' },
+  { value: 'FLYCRUISE', label: 'FLYCRUISE' },
+  { value: 'OACI', label: 'OACI' },
 ];
 
 const statusOptions = [
