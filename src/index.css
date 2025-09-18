@@ -33,13 +33,25 @@ body {
     min-height: 100vh;
     color: white;
 
-    background-image: url("/blue_bags.jpg");
+    background: url("/runway.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: rgba(255, 255, 255, 0.1);
+    /*background-color: rgba(255, 255, 255, 0.1);*/
     background-blend-mode: overlay;
+    /*filter: brightness(0.52) contrast(0.5);*/
 }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: #555;           /* Adjust this: lighter gray = allow more highlight */
+  mix-blend-mode: darken;
+  pointer-events: none;
+  z-index: 0;
+}
+
 
 .glass {
     background: rgba(255, 255, 255, 0.1);

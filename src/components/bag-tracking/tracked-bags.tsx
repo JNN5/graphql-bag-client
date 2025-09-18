@@ -143,9 +143,9 @@ const TrackedBags = () => {
                         Loading tracked bags...
                     </div>
                 ) : error ? (
-                    <div className="text-center py-4 text-red-500">{error}</div>
+                    <div className="text-center py-4 glass text-white">{error}</div>
                 ) : bags.length === 0 ? (
-                    <div className="text-center py-4 text-gray-500">
+                    <div className="text-center py-4 glass text-white">
                         No tracked bags found for today
                     </div>
                 ) : (
