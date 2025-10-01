@@ -40,9 +40,10 @@ const MainApp = () => {
                     data.bagTagNumber,
                     data.journey || "FLYCRUISE",
                     data.status || "EXPECTED",
-                    data.origin || data.flightId || "",
-                    data.destination || data.cruiseNumber || "",
-                    // JSON.stringify({ cruise_id: data.cruiseNumber })
+                    data.origin || "",
+                    data.destination || "",
+                    data.origin_date,
+                    data.destination_date,
                 );
                 setResult(
                     response as GraphQLResult<{
@@ -59,8 +60,9 @@ const MainApp = () => {
                     data.bagTagNumber,
                     data.origin,
                     data.destination,
+                    data.origin_date,
+                    data.destination_date,
                     data.vehicle_number,
-                    // JSON.stringify({ cruise_id: data.cruiseNumber })
                 );
                 setResult(
                     response as GraphQLResult<{

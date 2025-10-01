@@ -30,8 +30,8 @@ import Barcode from "@/components/ui/barcode";
 import { TrackedBag as TrackedBagType } from "@/lib/types";
 
 const JOURNEY_OPTIONS = [
-    { value: "FLYCRUISE", label: "Fly Cruise" },
-    { value: "CRUISEFLY", label: "Cruise Fly" },
+    { value: "FLYCRUISE", label: "FLYCRUISE" },
+    { value: "OACI", label: "OACI" },
 ];
 
 const TrackedBags = () => {
@@ -160,8 +160,8 @@ const TrackedBags = () => {
                                             </div>
                                             {/*<div className="text-sm">Journey: {bag.journey}</div>*/}
                                             <div className="text-sm">
-                                                Origin: {bag.origin} →
-                                                Destination: {bag.destination}
+                                                Origin: {bag.origin} ({bag.origin_date})→
+                                                Destination: {bag.destination} ({bag.destination_date})
                                             </div>
                                             <div
                                                 className={`px-2 py-1 rounded-md text-xs font-medium ${getStatusColor(bag.status)}`}

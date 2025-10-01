@@ -2,10 +2,10 @@
  * GraphQL Error type as returned by the GraphQL server
  */
 export interface GraphQLError {
-  message: string;
-  locations?: Array<{ line: number; column: number }>;
-  path?: string[];
-  extensions?: Record<string, unknown>;
+    message: string;
+    locations?: Array<{ line: number; column: number }>;
+    path?: string[];
+    extensions?: Record<string, unknown>;
 }
 
 /**
@@ -13,287 +13,371 @@ export interface GraphQLError {
  * All API responses follow this structure with data of type T
  */
 export interface GraphQLResult<T> {
-  data?: T;
-  errors?: GraphQLError[];
+    data?: T;
+    errors?: GraphQLError[];
 }
 
-// Enums
+/* ========= Enums ========= */
+
 export enum VehicleAction {
-  LOADING = "LOADING",
-  UNLOADING = "UNLOADING",
-  KEEPING = "KEEPING",
+    LOADING = "LOADING",
+    UNLOADING = "UNLOADING",
+    KEEPING = "KEEPING",
 }
 
-// Base types from schema
+export enum TrackingPointType {
+    USER = "USER",
+    API = "API",
+    BPM = "BPM",
+}
+
+export enum OriginDestinationType {
+    ArrivalFlight = "ArrivalFlight",
+    DepartureFlight = "DepartureFlight",
+    TransferFlight = "TransferFlight",
+    SelectionList = "SelectionList",
+    Custom = "Custom",
+}
+
+/* ========= Journey / Config Structures ========= */
+
 export interface JourneyUI {
-  icon?: string;
-  color?: string;
-  text_color?: string;
-  button_text?: string;
-  category_text?: string;
+    icon: string;
+    color: string;
+    text_color: string;
+    button_text: string;
+    category_text: string;
 }
 
 export interface JourneyFlow {
-  next_tracking_points?: string[];
-  is_initial: boolean;
-  vehicle_action?: VehicleAction;
-  no_of_images?: number;
+    next_tracking_points: string[];
+    is_initial: boolean;
+    vehicle_action?: VehicleAction;
+    no_of_images?: string[]; // Updated: now array of string (per new schema)
 }
 
-export interface TrackingPointConfig {
-  journey?: string;
-  status?: string;
-  category?: string;
-  menu_item?: string;
-  next_tracking_points?: string[];
-  required_inputs?: string; // AWSJSON
-  is_initial_state: boolean;
-  cognito_group?: string;
-  ui?: JourneyUI;
+/* Selection Lists & Origin/Destination union */
+
+export interface SelectionListItem {
+    name: string;
+    read_access: string[];
 }
+
+export interface SelectionList {
+    name: string;
+    origin_type: OriginDestinationType;
+    icon: string;
+    selection_list: SelectionListItem[];
+}
+
+export interface OriginDestinationBase {
+    name: string;
+    origin_type: OriginDestinationType;
+    icon: string;
+}
+
+export type OriginDestination = OriginDestinationBase | SelectionList;
+
+/* Tracking Point Config union */
+
+export interface ITrackingPointConfig {
+    type: TrackingPointType;
+    status: string;
+    status_name: string;
+    location?: string;
+    flow?: JourneyFlow;
+    read_access: string[];
+    full_access: string[];
+}
+
+export type TrackingPointConfigBase = ITrackingPointConfig; // alias (interface had no additional members)
+
+export interface UserTrackingPointConfig extends ITrackingPointConfig {
+    ui: JourneyUI;
+}
+
+export type TrackingPointConfigUnion =
+    | TrackingPointConfigBase
+    | UserTrackingPointConfig;
+
+/* Journey Config */
+
+export interface JourneyConfig {
+    name: string;
+    origin: OriginDestination;
+    destination: OriginDestination;
+    tracking_points: TrackingPointConfigUnion[];
+}
+
+/* ========= Core Domain Types ========= */
 
 export interface TrackingPoint {
-  bag_tag_no: string;
-  tracking_point_id: string;
-  journey: string;
-  status: string;
-  location?: string;
-  bpm: string;
-  timestamp: string;
-  reverted: boolean;
-  origin?: string;
-  destination?: string;
-  vehicle_action?: string;
-  vehicle_number?: string;
-  tracked_by?: string;
-  additional_data?: string; // AWSJSON
+    bag_tag_no: string;
+    tracking_point_id: string;
+    journey: string;
+    status: string;
+    location?: string;
+    bpm: string;
+    timestamp: string;
+    reverted: boolean;
+    origin: string;
+    origin_date: string;
+    destination: string;
+    destination_date: string;
+    vehicle_action?: string;
+    vehicle_number?: string;
+    tracked_by?: string;
+    damaged?: boolean;
+    bag_images?: BagImage[];
+    additional_data?: string; // AWSJSON
 }
 
 export interface BagImage {
-  name: string;
-  url: string;
-  type: string;
+    name: string;
+    url: string;
+    type: string;
 }
 
 export interface TrackedBag {
-  bag_tag_no: string;
-  journey: string;
-  status: string;
-  location?: string;
-  updated_by?: string;
-  last_updated: string;
-  origin: string;
-  destination: string;
-  vehicle_number?: string;
-  additional_data?: string; // AWSJSON
-  bag_images?: BagImage[];
+    bag_tag_no: string;
+    journey: string;
+    status: string;
+    location?: string;
+    updated_by?: string;
+    last_updated: string;
+    origin: string;
+    origin_date: string;
+    destination: string;
+    destination_date: string;
+    vehicle_number?: string;
+    additional_data?: string; // AWSJSON
+    bag_images?: BagImage[];
+    damaged: boolean;
 }
 
 export interface Vehicle {
-  vehicle_number?: string;
-  journey?: string;
+    vehicle_number?: string;
+    journey?: string;
 }
 
 export interface MenuItem {
-  journey: string;
-  status: string;
-  category: string;
-  menu_item: string;
-  cognito_group?: string;
-  ui?: JourneyUI;
-  flow?: JourneyFlow;
+    journey: string;
+    status: string;
+    category: string;
+    menu_item: string;
+    cognito_group?: string;
+    ui?: JourneyUI;
+    flow?: JourneyFlow;
 }
 
+/* Kept for limited backward compatibility (legacy concepts) */
 export interface Journey {
-  journey?: string;
-  status?: string;
-  status_name?: string;
-  location?: string;
-  flow?: JourneyFlow;
-  ui?: JourneyUI;
-  read_access?: string[];
-  full_access?: string[];
+    journey?: string;
+    status?: string;
+    status_name?: string;
+    location?: string;
+    flow?: JourneyFlow;
+    ui?: JourneyUI;
+    read_access?: string[];
+    full_access?: string[];
 }
 
 export interface MessageHistoryFormat {
-  ts?: string;
-  message?: string;
-  message_type?: string;
-  bag_status?: string;
+    ts?: string;
+    message?: string;
+    message_type?: string;
+    bag_status?: string;
 }
 
 export interface LastUserUpdateTS {
-  timestamp?: string;
-  userId?: string;
+    timestamp?: string;
+    userId?: string;
 }
 
 export interface Bag {
-  flight_no: string;
-  scheduled_date: string;
-  bag_tag_no: string;
-  bag_tag_last_five: string;
-  bag_status: string;
-  bag_journey: string;
-  last_process_ts: string;
-  last_user_update_ts?: LastUserUpdateTS;
-  container_sheet_id?: string;
-  cargo_hold_number?: string;
-  is_gatebag?: string;
-  cargo_hold?: string;
-  comment?: string[];
-  message_history?: MessageHistoryFormat[];
-  mast_bpm_history?: string[];
-  loading_sequence?: string;
-  bt_number?: string;
+    flight_no: string;
+    scheduled_date: string;
+    bag_tag_no: string;
+    bag_tag_last_five: string;
+    bag_status: string;
+    bag_journey: string;
+    last_process_ts: string;
+    last_user_update_ts?: LastUserUpdateTS;
+    container_sheet_id?: string;
+    cargo_hold_number?: string;
+    is_gatebag?: string;
+    cargo_hold?: string;
+    comment?: string[];
+    message_history?: MessageHistoryFormat[];
+    mast_bpm_history?: string[];
+    loading_sequence?: string;
+    bt_number?: string;
 }
 
-// Legacy interfaces for backward compatibility
+/* ========= Form / UI Data ========= */
+
 export interface BagTrackingData {
-  bagTagNumber: string;
-  flightId: string; // Used as origin in new schema
-  cruiseNumber: string; // Used as destination in new schema
-  journey?: string;
-  status?: string;
-  origin?: string; // New field from schema
-  destination?: string; // New field from schema
-  vehicle_number?: string; // New field from schema
+    bagTagNumber: string;
+    origin: string;
+    destination: string;
+    journey?: string;
+    status?: string;
+    origin_date?: string;
+    destination_date?: string;
+    vehicle_number?: string;
 }
 
-// Input types
+/* ========= Inputs ========= */
+
+export interface ImageInput {
+    name: string;
+    type: string;
+}
+
 export interface BagInput {
-  bag_tag_no: string;
-  origin: string;
-  destination: string;
-  vehicle_number?: string;
+    bag_tag_no: string;
+    origin?: string;
+    origin_date?: string;
+    destination?: string;
+    destination_date?: string;
+    vehicle_number?: string;
 }
 
 export interface TrackedBagInput {
-  bag_tag_no: string;
-  journey: string;
-  status: string;
-  location?: string;
-  origin: string;
-  destination: string;
-  vehicle_number?: string;
-  last_updated: string;
-  updated_by?: string;
-  additional_data?: string; // AWSJSON
+    bag_tag_no: string;
+    journey: string;
+    status: string;
+    location?: string;
+    origin: string;
+    origin_date: string;
+    destination: string;
+    destination_date: string;
+    vehicle_number?: string;
+    last_updated: string;
+    damaged?: boolean;
+    images?: ImageInput[];
+    gha?: string;
+    updated_by: string;
+    additional_data?: string; // AWSJSON
 }
 
 export interface BagImageInput {
-  bag_tag_no: string;
-  journey: string;
-  origin: string;
-  destination: string;
-  name: string;
-  type: string;
+    bag_tag_no: string;
+    journey: string;
+    origin: string;
+    origin_date: string;
+    destination: string;
+    destination_date: string;
+    name: string;
+    type: string;
 }
 
-// Variables for mutations
+/* ========= Variables ========= */
+
 export interface GraphQLVariables extends Record<string, unknown> {
-  journey: string;
-  status: string;
-  bags: BagInput[];
-  required_inputs: string;
+    journey: string;
+    status: string;
+    bags: BagInput[];
+    required_inputs: string;
 }
 
-// Query result interfaces
+/* ========= Result Wrappers ========= */
+
 export type SampleBagsResult = GraphQLResult<{
-  getTenBags: Bag[];
+    getTenBags: Bag[];
 }>;
 
-// Legacy types for compatibility
 export interface BagTrackingResult {
-  bag_id: string;
-  journey: string;
-  status: string;
+    bag_id: string;
+    journey: string;
+    status: string;
 }
 
 export type MutationResult = GraphQLResult<{
-  saveTrackingPointForMultipleBags?: TrackingPoint[];
+    saveTrackingPointForMultipleBags?: TrackingPoint[];
 }>;
 
-// For backward compatibility
 export type NewBag = Bag;
 
-// Additional query result types
-export type TrackingPointsConfigResult = GraphQLResult<{
-  getTrackingPointsConfig: TrackingPointConfig[];
+/* Journey Config Query */
+export type JourneyConfigResult = GraphQLResult<{
+    getJourneyConfig: JourneyConfig;
 }>;
 
-export type TrackingPointsConfigByJourneyResult = GraphQLResult<{
-  getTrackingPointsConfigByJourney: TrackingPointConfig[];
-}>;
-
-export type TrackingPointsConfigByCategoryResult = GraphQLResult<{
-  getTrackingPointsConfigByCategory: TrackingPointConfig[];
-}>;
-
+/* Tracking / Bag Queries */
 export type TrackingPointByIdResult = GraphQLResult<{
-  getTrackingPointById: TrackingPoint;
+    getTrackingPointById: TrackingPoint;
 }>;
 
 export type TrackingPointsByBagTagNoResult = GraphQLResult<{
-  getTrackingPointsByBagTagNo: TrackingPoint[];
+    getTrackingPointsByBagTagNo: TrackingPoint[];
 }>;
 
 export type TrackedBagsByDateResult = GraphQLResult<{
-  getTrackedBagsByDate: TrackedBag[];
+    getTrackedBagsByDate: TrackedBag[];
 }>;
 
 export type TrackedBagsResult = GraphQLResult<{
-  getTrackedBags: TrackedBag[];
+    getTrackedBags: TrackedBag[];
 }>;
 
 export type TrackedBagsByBagTagNoResult = GraphQLResult<{
-  getTrackedBagsByBagTagNo: TrackedBag[];
+    getTrackedBagsByBagTagNo: TrackedBag[];
+}>;
+
+export type TrackedBagByBagTagNoResult = GraphQLResult<{
+    getTrackedBagByBagTagNo: TrackedBag;
 }>;
 
 export type VehicleResult = GraphQLResult<{
-  getVehicle: Vehicle[];
+    getVehicle: Vehicle[];
 }>;
 
 export type MenuItemsResult = GraphQLResult<{
-  getMenuItems: MenuItem[];
+    getMenuItems: MenuItem[];
 }>;
 
-// Mutation result types
+/* Mutations */
 export type StartTrackingPointJourneyResult = GraphQLResult<{
-  startTrackingPointJourney: TrackingPoint;
+    startTrackingPointJourney: TrackingPoint;
 }>;
 
 export type GenerateBagIdResult = GraphQLResult<{
-  generateBagId: TrackingPoint;
+    generateBagId: TrackingPoint;
 }>;
 
 export type SaveTrackingPointResult = GraphQLResult<{
-  saveTrackingPoint: TrackingPoint;
+    saveTrackingPoint: TrackingPoint;
 }>;
 
 export type RevertTrackingPointResult = GraphQLResult<{
-  revertTrackingPoint: TrackingPoint;
+    revertTrackingPoint: TrackingPoint;
 }>;
 
 export type MassUpdateTrackingPointStatusResult = GraphQLResult<{
-  massUpdateTrackingPointStatus: TrackingPoint[];
+    massUpdateTrackingPointStatus: TrackingPoint[];
 }>;
 
 export type UpdateTrackingPointStatusRemovedResult = GraphQLResult<{
-  updateTrackingPointStatusRemoved: TrackingPoint;
+    updateTrackingPointStatusRemoved: TrackingPoint;
 }>;
 
 export type SaveBagImagesResult = GraphQLResult<{
-  saveBagImages: BagImage[];
+    saveBagImages: BagImage[];
 }>;
 
 export type SaveVehicleResult = GraphQLResult<{
-  saveVehicle: Vehicle;
+    saveVehicle: Vehicle;
 }>;
 
 export type SaveTrackingPointsForBagsOnVehicleResult = GraphQLResult<{
-  saveTrackingPointsForBagsOnVehicle: TrackingPoint[];
+    saveTrackingPointsForBagsOnVehicle: TrackingPoint[];
 }>;
 
 export type UpdateTrackedBagResult = GraphQLResult<{
-  updateTrackedBag: TrackedBag;
+    updateTrackedBag: TrackedBag;
+}>;
+
+export type ReportDamageBagResult = GraphQLResult<{
+    reportDamageBag: TrackingPoint;
 }>;

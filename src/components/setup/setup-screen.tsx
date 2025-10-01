@@ -77,8 +77,8 @@ const SetupScreen = ({ onSetupComplete }: SetupScreenProps) => {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="space-y-2 rounded-md backdrop-blur-[3px]  shadow-[inset_1px_1px_0.5px_0_rgba(255,255,255,0.4)]">
+                        <form onSubmit={handleSubmit} className="space-y-2 mt-4">
+                            <div className="space-y-2 rounded-md glass">
                                 <Input
                                     id="url"
                                     placeholder="https://api.example.com/graphql"
@@ -113,7 +113,7 @@ const SetupScreen = ({ onSetupComplete }: SetupScreenProps) => {
                     </CardContent>
                     <CardFooter>
                         <Button
-                            className="w-full bg bg-teal-600 hover:bg-teal-600/90 glass"
+                            className="w-full mt-4 bg bg-teal-600 hover:bg-teal-600/90 glass"
                             onClick={handleSubmit}
                             disabled={isValidating}
                         >
