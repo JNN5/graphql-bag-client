@@ -22,7 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useApiSetup } from "@/contexts/api-setup-context";
 import { getTenBags } from "@/lib/graphql";
-import { Bag } from "@/lib/types";
+import { Bag, SampleBagsResult } from "@/lib/types";
 
 const SampleBags = () => {
     const { apiUrl, apiKey } = useApiSetup();
@@ -34,7 +34,7 @@ const SampleBags = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const result = await getTenBags(apiUrl, apiKey);
+            const result = (await getTenBags(apiUrl, apiKey)) as SampleBagsResult;
             if (result.data?.getTenBags) {
                 setBags(result.data.getTenBags);
             }

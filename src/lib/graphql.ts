@@ -139,12 +139,6 @@ const QUERY_TEN_BAGS = `
     }
   }
 `;
-
-/* Wrapper */
-export function getTenBags(endpoint: string, apiKey: string) {
-    return executeGraphQLRequest(endpoint, apiKey, QUERY_TEN_BAGS);
-}
-
 /* -------- Tracking Point By Id -------- */
 const QUERY_TRACKING_POINT_BY_ID = `
   query getTrackingPointById(
@@ -1215,3 +1209,8 @@ export function reportDamageBag(
     );
 }
 // Added getTenBags query (testing / sample data)
+
+/* Wrapper */
+export function getTenBags(endpoint: string, apiKey: string) {
+    return executeGraphQLRequest(endpoint, apiKey, QUERY_TEN_BAGS);
+}
