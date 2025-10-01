@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 
 import { useApiSetup } from "@/contexts/api-setup-context";
 import BagTrackingForm from "@/components/bag-tracking/bag-tracking-form";
 import SampleBags from "@/components/bag-tracking/sample-bags";
 import ApiHeader from "@/components/layout/api-header";
 import ResultDisplay from "@/components/results/result-display";
-import TrackedBags from "@/components/bag-tracking/tracked-bags";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { startTrackingPointJourney, saveTrackingPoint } from "@/lib/graphql";
 
 // Types
 import { BagTrackingData, GraphQLResult, TrackingPoint } from "@/lib/types";
+const TrackedBags = lazy(
+    () => import("@/components/bag-tracking/tracked-bags"),
+);
 
 const MainApp = () => {
     const { apiUrl, apiKey } = useApiSetup();
@@ -98,6 +101,11 @@ const MainApp = () => {
                             <TabsTrigger
                                 value="view"
                                 className="data-[state=inactive]:text-white"
+                                onMouseEnter={() =>
+                                    import(
+                                        "@/components/bag-tracking/tracked-bags"
+                                    )
+                                }
                             >
                                 View Tracked Bags
                             </TabsTrigger>
@@ -121,7 +129,15 @@ const MainApp = () => {
                             </div>
                         </TabsContent>
                         <TabsContent value="view" className="min-h-[800px]">
-                            <TrackedBags />
+                            <Suspense
+                                fallback={
+                                    <div className="p-4 text-sm text-muted-foreground">
+                                        Loading tracked bags...
+                                    </div>
+                                }
+                            >
+                                <TrackedBags />
+                            </Suspense>
                         </TabsContent>
                     </Tabs>
                 </div>
