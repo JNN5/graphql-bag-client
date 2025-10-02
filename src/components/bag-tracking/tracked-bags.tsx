@@ -163,6 +163,11 @@ const TrackedBags = () => {
                                                 Origin: {bag.origin} ({bag.origin_date})→
                                                 Destination: {bag.destination} ({bag.destination_date})
                                             </div>
+                                            {bag.damaged && (
+                                                <div className="py-1 text-xs bg-red-900 rounded-md">
+                                                    DAMAGED
+                                                </div>
+                                            )}
                                             <div
                                                 className={`px-2 py-1 rounded-md text-xs font-medium ${getStatusColor(bag.status)}`}
                                             >
