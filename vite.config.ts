@@ -4,12 +4,13 @@ import react from "@vitejs/plugin-react";
 import { defineConfig, splitVendorChunkPlugin } from "vite";
 
 /**
- * Minimal stable Vite config after aggressive pruning.
- * Removed dynamic imports, optional visualizer, and manual chunk micromanagement
- * that referenced deleted dependencies (recharts, framer-motion, etc.).
+ * Vite configuration (simplified)
  *
- * If you later want bundle analysis, install rollup-plugin-visualizer and
- * reintroduce it explicitly.
+ * Changes vs previous version:
+ * - Enabled source maps (build.sourcemap = true) to aid in production debugging.
+ * - Removed custom manualChunks logic to avoid potential chunk ordering / evaluation issues.
+ * - Kept deterministic asset naming for cache friendliness.
+ * - Preserved @ alias to src.
  */
 
 const srcDir = path.resolve(fileURLToPath(new URL("./src", import.meta.url)));
@@ -18,7 +19,7 @@ export default defineConfig({
     base: "/graphql-bag-client/",
     plugins: [
         react(),
-        // Provides a simple vendor split (react/react-dom) automatically.
+        // Retain Vite's built-in simple vendor splitter (react/react-dom).
         splitVendorChunkPlugin(),
     ],
     resolve: {
@@ -29,55 +30,19 @@ export default defineConfig({
     build: {
         target: "es2018",
         cssTarget: "chrome90",
+        // Turn ON source maps for easier production debugging (will emit *.js.map files)
         sourcemap: true,
         minify: "esbuild",
         rollupOptions: {
-            // Keep output naming deterministic & cache-friendly + fine-grained manual chunking
             output: {
                 entryFileNames: "assets/[name]-[hash].js",
                 chunkFileNames: "assets/[name]-[hash].js",
                 assetFileNames: "assets/[name]-[hash][extname]",
-                manualChunks(id) {
-                    if (!id.includes("node_modules")) return;
-                    // React core
-                    if (id.match(/\/react(-dom)?\//)) return "react-vendor";
-                    // Radix primitives actually used
-                    if (
-                        id.match(
-                            /@radix-ui\/react-(accordion|alert-dialog|dialog|scroll-area|select|switch|tabs|label)/,
-                        )
-                    ) {
-                        return "radix";
-                    }
-                    // Form & validation stack
-                    if (
-                        id.includes("react-hook-form") ||
-                        id.includes("@hookform") ||
-                        id.includes("zod")
-                    ) {
-                        return "forms";
-                    }
-                    // Date utilities
-                    if (id.includes("date-fns")) return "dates";
-                    // Barcode generation (heavy)
-                    if (id.includes("bwip-js")) return "barcode";
-                    // Icons
-                    if (id.includes("lucide-react")) return "icons";
-                    // Theming
-                    if (id.includes("next-themes")) return "theme";
-                    // Styling helpers
-                    if (
-                        id.includes("class-variance-authority") ||
-                        id.includes("tailwind-merge")
-                    ) {
-                        return "styling";
-                    }
-                    return;
-                },
+                // No manualChunks override: let Rollup/Vite decide optimal splitting.
             },
         },
     },
     optimizeDeps: {
-        // No exclusions needed after pruning.
+        // No exclusions needed at this stage.
     },
 });
