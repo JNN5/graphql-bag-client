@@ -29,7 +29,7 @@ export default defineConfig({
     build: {
         target: "es2018",
         cssTarget: "chrome90",
-        sourcemap: false,
+        sourcemap: true,
         minify: "esbuild",
         rollupOptions: {
             // Keep output naming deterministic & cache-friendly + fine-grained manual chunking
