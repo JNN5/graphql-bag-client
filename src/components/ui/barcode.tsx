@@ -52,19 +52,19 @@ export default function Barcode({ text, scale }: BarcodeProps) {
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <div
-                    className="inline-block glass-white p-4"
+                    className="flex glass-white p-4"
                     onClick={() => setOpen(true)}
                 >
                     <canvas
                         ref={(c) => renderBarcode(c, false)}
-                        className="cursor-pointer select-none"
+                        className="relative cursor-pointer select-none max-w-full"
                     />
                 </div>
                 <DialogContent className="sm:max-w-3xl">
                     <div className="flex flex-col items-center gap-4 glass-white p-4">
                         <canvas
                             ref={(c) => renderBarcode(c, true)}
-                            className="max-w-full"
+                            className="relative max-w-full"
                         />
                     </div>
                 </DialogContent>
