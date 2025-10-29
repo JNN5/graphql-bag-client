@@ -32,6 +32,8 @@ import { TrackedBag as TrackedBagType } from "@/lib/types";
 const JOURNEY_OPTIONS = [
     { value: "FLYCRUISE", label: "FLYCRUISE" },
     { value: "OACI", label: "OACI" },
+    { value: "DEPARTURE", label: "DEPARTURE" },
+    { value: "TERMINAL_TRANSFER", label: "TERMINAL_TRANSFER" },
 ];
 
 const TrackedBags = () => {
