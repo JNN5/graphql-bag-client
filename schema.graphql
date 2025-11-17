@@ -38,6 +38,7 @@ interface ITrackingPointConfig {
     type: TrackingPointType!
     status: String!
     status_name: String!
+    name: String!
     location: String
     flow: JourneyFlow
     read_access: [String!]!
@@ -49,6 +50,7 @@ type UserTrackingPointConfig implements ITrackingPointConfig
     type: TrackingPointType!
     status: String!
     status_name: String!
+    name: String!
     location: String
     ui: JourneyUI
     flow: JourneyFlow
@@ -61,6 +63,7 @@ type TrackingPointConfigBase implements ITrackingPointConfig
     type: TrackingPointType!
     status: String!
     status_name: String!
+    name: String!
     location: String
     flow: JourneyFlow
     read_access: [String!]!
@@ -73,6 +76,9 @@ enum VehicleAction {
     LOADING
     UNLOADING
     KEEPING
+    CS_LOADING
+    CS_UNLOADING
+    CS_KEEPING
 }
 
 type JourneyFlow @aws_cognito_user_pools {
@@ -145,9 +151,68 @@ type TrackedBag @aws_iam @aws_api_key @aws_cognito_user_pools {
     damaged: Boolean!
 }
 
-type Vehicle @aws_iam @aws_api_key @aws_cognito_user_pools {
-    vehicle_number: String
-    journey: String
+union Vehicle = Transporter | ContainerSheet
+
+interface IVehicle {
+    journey: String!
+    vehicle_number: String!
+    number_of_bags: Int!
+    created_at: String!
+}
+
+type ContainerSheet implements IVehicle
+    @aws_iam
+    @aws_api_key
+    @aws_cognito_user_pools {
+    vehicle_number: String!
+    journey: String!
+    number_of_bags: Int!
+    created_at: String!
+    container_sheet_id: ID
+    container_type: ContainerType
+    origin: String
+    origin_date: String
+    destination: String
+    destination_date: String
+    flight_class: FlightClass
+    container_status: ContainerStatus
+    bt_number: String
+    cargo_hold_number: String
+    last_process_ts: String
+    comment: String
+}
+
+enum FlightClass {
+    FIRST
+    BUSINESS
+    PREMIUM_ECONOMY
+    ECONOMY
+}
+
+enum ContainerType {
+    BT
+    ULD
+}
+
+enum ContainerTypePhysical {
+    ULD
+    CART
+}
+
+enum ContainerStatus {
+    CREATED
+    PAIRED
+    LOADED_TO_AIRCRAFT
+}
+
+type Transporter implements IVehicle
+    @aws_iam
+    @aws_api_key
+    @aws_cognito_user_pools {
+    vehicle_number: String!
+    journey: String!
+    number_of_bags: Int!
+    created_at: String!
 }
 
 input TrackedBagInput {
@@ -162,7 +227,7 @@ input TrackedBagInput {
     vehicle_number: String
     last_updated: String!
     damaged: Boolean
-    images: [ImageInput!]
+    images: [ExistingImageInput!]
     gha: String
     updated_by: String!
     additional_data: AWSJSON
@@ -193,6 +258,12 @@ input ImageInput {
     type: String!
 }
 
+input ExistingImageInput {
+    name: String!
+    type: String!
+    objectKey: String!
+}
+
 type BagImage @aws_iam @aws_api_key @aws_cognito_user_pools {
     name: String!
     url: String!
@@ -209,6 +280,17 @@ type MessageHistoryFormat @aws_iam @aws_api_key @aws_cognito_user_pools {
 type LastUserUpdateTS @aws_iam @aws_api_key @aws_cognito_user_pools {
     timestamp: String
     userId: String
+}
+
+type TrackedBagsInformation @aws_iam @aws_api_key @aws_cognito_user_pools {
+    no_of_origins: Int!
+    no_of_destinations: Int!
+    status_summary: [StatusSummary!]!
+}
+
+type StatusSummary @aws_iam @aws_api_key @aws_cognito_user_pools {
+    status: String
+    bags: [TrackedBag]
 }
 
 type Bag @aws_iam @aws_api_key @aws_cognito_user_pools {
@@ -235,7 +317,7 @@ type Mutation {
     startTrackingPointJourney(
         bag_tag_no: String!
         journey: String!
-        status: String!
+        name: String!
         origin: String!
         origin_date: String
         destination: String!
@@ -249,7 +331,7 @@ type Mutation {
     ): TrackingPoint @aws_iam @aws_api_key @aws_cognito_user_pools
     saveTrackingPoint(
         journey: String!
-        status: String!
+        name: String!
         bag_tag_no: String!
         origin: String
         origin_date: String
@@ -261,7 +343,7 @@ type Mutation {
     ): TrackingPoint @aws_iam @aws_api_key @aws_cognito_user_pools
     saveTrackingPointForMultipleBags(
         journey: String!
-        status: String!
+        name: String!
         bags: [BagInput!]
         required_inputs: AWSJSON
     ): [TrackingPoint] @aws_iam @aws_api_key @aws_cognito_user_pools
@@ -286,18 +368,19 @@ type Mutation {
         @aws_iam
         @aws_api_key
         @aws_cognito_user_pools
-    saveDamagedBagImages(bag_images: [BagImageInput!]): [BagImage]
+    saveVehicle(vehicle_number: String!, journey: String!): Transporter 
         @aws_iam
         @aws_api_key
         @aws_cognito_user_pools
-    saveVehicle(vehicle_number: String!, journey: String): Vehicle
+    deleteVehicle(vehicle_number: String!, journey: String!): String
         @aws_iam
         @aws_api_key
         @aws_cognito_user_pools
     saveTrackingPointsForBagsOnVehicle(
         vehicle_number: String!
         journey: String!
-        status: String!
+        name: String!
+        images: [ImageInput!]
     ): [TrackingPoint] @aws_iam @aws_api_key @aws_cognito_user_pools
     updateTrackedBag(bag: TrackedBagInput!): TrackedBag
         @aws_iam
@@ -314,6 +397,17 @@ type Mutation {
         destination: String
         destination_date: String
     ): TrackingPoint @aws_iam @aws_api_key @aws_cognito_user_pools
+    createContainerSheet(
+        journey: String!,
+		container_type: ContainerTypePhysical!,
+		origin: String, # Either origin and origin_date or destination and destination_date must be provided
+		origin_date: String,
+		destination: String,
+		destination_date: String,
+		flight_class: FlightClass!,
+		comment: String
+	): ContainerSheet @aws_iam @aws_cognito_user_pools
+	pairContainerSheet(journey: String, container_sheet_id: ID!, bt_number: String!, container_status: String): ContainerSheet @aws_iam @aws_cognito_user_pools
 }
 
 type Query @aws_iam @aws_api_key @aws_cognito_user_pools {
@@ -349,8 +443,18 @@ type Query @aws_iam @aws_api_key @aws_cognito_user_pools {
         destination: String
         destination_date: String
     ): TrackedBag
+    getTrackedBagsInformationByDate(
+        date: String!
+        journey: String!
+    ): TrackedBagsInformation
     getTenBags: [Bag] # For testing purposes
-    getVehicle(journey: String): [Vehicle]
+    getVehicle(journey: String): [Transporter]
+    getContainerSheetsByOriginDestination(
+        origin: String # Either origin and origin_date or destination and destination_date must be provided
+        origin_date: String
+        destination: String
+        destination_date: String
+    ): [ContainerSheet]
 }
 
 schema {

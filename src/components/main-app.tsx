@@ -37,12 +37,14 @@ const MainApp = () => {
             // Handle different tracking modes with appropriate mutations
             if (isStartTracking) {
                 // Use MUTATION_START_TRACKING_POINT_JOURNEY
+                // Note: 'name' parameter is now required by the schema
+                // Using status as the tracking point name for now
                 response = await startTrackingPointJourney(
                     apiUrl,
                     apiKey,
                     data.bagTagNumber,
                     data.journey || "FLYCRUISE",
-                    data.status || "EXPECTED",
+                    data.status || "EXPECTED", // This is now the 'name' parameter
                     data.origin || "",
                     data.destination || "",
                     data.origin_date,
@@ -55,11 +57,13 @@ const MainApp = () => {
                 );
             } else {
                 // Use MUTATION_SAVE_TRACKING_POINT
+                // Note: 'name' parameter is now required by the schema
+                // Using status as the tracking point name for now
                 response = await saveTrackingPoint(
                     apiUrl,
                     apiKey,
                     data.journey || "FLYCRUISE",
-                    data.status || "EXPECTED",
+                    data.status || "EXPECTED", // This is now the 'name' parameter
                     data.bagTagNumber,
                     data.origin,
                     data.destination,

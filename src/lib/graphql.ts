@@ -357,6 +357,75 @@ const QUERY_VEHICLE = `
     getVehicle(journey: $journey) {
       vehicle_number
       journey
+      number_of_bags
+      created_at
+    }
+  }
+`;
+
+/* -------- TrackedBagsInformation Query -------- */
+const QUERY_TRACKED_BAGS_INFORMATION = `
+  query getTrackedBagsInformationByDate($date: String!, $journey: String!) {
+    getTrackedBagsInformationByDate(date: $date, journey: $journey) {
+      no_of_origins
+      no_of_destinations
+      status_summary {
+        status
+        bags {
+          bag_tag_no
+          journey
+          status
+          location
+          updated_by
+          last_updated
+          origin
+          origin_date
+          destination
+          destination_date
+          vehicle_number
+          additional_data
+          damaged
+          bag_images {
+            name
+            url
+            type
+          }
+        }
+      }
+    }
+  }
+`;
+
+/* -------- ContainerSheet Queries -------- */
+const QUERY_CONTAINER_SHEETS = `
+  query getContainerSheetsByOriginDestination(
+    $origin: String
+    $origin_date: String
+    $destination: String
+    $destination_date: String
+  ) {
+    getContainerSheetsByOriginDestination(
+      origin: $origin
+      origin_date: $origin_date
+      destination: $destination
+      destination_date: $destination_date
+    ) {
+      vehicle_number
+      journey
+      number_of_bags
+      created_at
+      container_sheet_id
+      container_type
+      origin
+      origin_date
+      destination
+      destination_date
+      flight_class
+      container_status
+      bt_number
+      cargo_hold_number
+      last_process_ts
+      comment
     }
   }
 `;
@@ -367,7 +436,7 @@ const MUTATION_START_TRACKING_POINT_JOURNEY = `
   mutation startTrackingPointJourney(
     $bag_tag_no: String!
     $journey: String!
-    $status: String!
+    $name: String!
     $origin: String!
     $origin_date: String
     $destination: String!
@@ -377,7 +446,7 @@ const MUTATION_START_TRACKING_POINT_JOURNEY = `
     startTrackingPointJourney(
       bag_tag_no: $bag_tag_no
       journey: $journey
-      status: $status
+      name: $name
       origin: $origin
       origin_date: $origin_date
       destination: $destination
@@ -442,7 +511,7 @@ const MUTATION_GENERATE_BAG_ID = `
 const MUTATION_SAVE_TRACKING_POINT = `
   mutation saveTrackingPoint(
     $journey: String!
-    $status: String!
+    $name: String!
     $bag_tag_no: String!
     $origin: String
     $origin_date: String
@@ -454,7 +523,7 @@ const MUTATION_SAVE_TRACKING_POINT = `
   ) {
     saveTrackingPoint(
       journey: $journey
-      status: $status
+      name: $name
       bag_tag_no: $bag_tag_no
       origin: $origin
       origin_date: $origin_date
@@ -489,13 +558,13 @@ const MUTATION_SAVE_TRACKING_POINT = `
 const MUTATION_SAVE_TRACKING_POINT_FOR_MULTIPLE_BAGS = `
   mutation saveTrackingPointForMultipleBags(
     $journey: String!
-    $status: String!
+    $name: String!
     $bags: [BagInput!]
     $required_inputs: AWSJSON
   ) {
     saveTrackingPointForMultipleBags(
       journey: $journey
-      status: $status
+      name: $name
       bags: $bags
       required_inputs: $required_inputs
     ) {
@@ -634,22 +703,20 @@ const MUTATION_SAVE_BAG_IMAGES = `
   }
 `;
 
-const MUTATION_SAVE_DAMAGED_BAG_IMAGES = `
-  mutation saveDamagedBagImages($bag_images: [BagImageInput!]) {
-    saveDamagedBagImages(bag_images: $bag_images) {
-      name
-      url
-      type
+const MUTATION_SAVE_VEHICLE = `
+  mutation saveVehicle($vehicle_number: String!, $journey: String!) {
+    saveVehicle(vehicle_number: $vehicle_number, journey: $journey) {
+      vehicle_number
+      journey
+      number_of_bags
+      created_at
     }
   }
 `;
 
-const MUTATION_SAVE_VEHICLE = `
-  mutation saveVehicle($vehicle_number: String!, $journey: String) {
-    saveVehicle(vehicle_number: $vehicle_number, journey: $journey) {
-      vehicle_number
-      journey
-    }
+const MUTATION_DELETE_VEHICLE = `
+  mutation deleteVehicle($vehicle_number: String!, $journey: String!) {
+    deleteVehicle(vehicle_number: $vehicle_number, journey: $journey)
   }
 `;
 
@@ -657,12 +724,14 @@ const MUTATION_SAVE_TRACKING_POINTS_FOR_BAGS_ON_VEHICLE = `
   mutation saveTrackingPointsForBagsOnVehicle(
     $vehicle_number: String!
     $journey: String!
-    $status: String!
+    $name: String!
+    $images: [ImageInput!]
   ) {
     saveTrackingPointsForBagsOnVehicle(
       vehicle_number: $vehicle_number
       journey: $journey
-      status: $status
+      name: $name
+      images: $images
     ) {
       bag_tag_no
       tracking_point_id
@@ -752,6 +821,81 @@ const MUTATION_REPORT_DAMAGE_BAG = `
       damaged
       bag_images { name url type }
       additional_data
+    }
+  }
+`;
+
+/* -------- ContainerSheet Mutations -------- */
+const MUTATION_CREATE_CONTAINER_SHEET = `
+  mutation createContainerSheet(
+    $journey: String!
+    $container_type: ContainerTypePhysical!
+    $origin: String
+    $origin_date: String
+    $destination: String
+    $destination_date: String
+    $flight_class: FlightClass!
+    $comment: String
+  ) {
+    createContainerSheet(
+      journey: $journey
+      container_type: $container_type
+      origin: $origin
+      origin_date: $origin_date
+      destination: $destination
+      destination_date: $destination_date
+      flight_class: $flight_class
+      comment: $comment
+    ) {
+      vehicle_number
+      journey
+      number_of_bags
+      created_at
+      container_sheet_id
+      container_type
+      origin
+      origin_date
+      destination
+      destination_date
+      flight_class
+      container_status
+      bt_number
+      cargo_hold_number
+      last_process_ts
+      comment
+    }
+  }
+`;
+
+const MUTATION_PAIR_CONTAINER_SHEET = `
+  mutation pairContainerSheet(
+    $journey: String
+    $container_sheet_id: ID!
+    $bt_number: String!
+    $container_status: String
+  ) {
+    pairContainerSheet(
+      journey: $journey
+      container_sheet_id: $container_sheet_id
+      bt_number: $bt_number
+      container_status: $container_status
+    ) {
+      vehicle_number
+      journey
+      number_of_bags
+      created_at
+      container_sheet_id
+      container_type
+      origin
+      origin_date
+      destination
+      destination_date
+      flight_class
+      container_status
+      bt_number
+      cargo_hold_number
+      last_process_ts
+      comment
     }
   }
 `;
@@ -941,7 +1085,7 @@ export function startTrackingPointJourney(
     apiKey: string,
     bag_tag_no: string,
     journey: string,
-    status: string,
+    name: string,
     origin: string,
     destination: string,
     origin_date?: string,
@@ -955,7 +1099,7 @@ export function startTrackingPointJourney(
         {
             bag_tag_no,
             journey,
-            status,
+            name,
             origin,
             origin_date,
             destination,
@@ -983,7 +1127,7 @@ export function saveTrackingPoint(
     endpoint: string,
     apiKey: string,
     journey: string,
-    status: string,
+    name: string,
     bag_tag_no: string,
     origin?: string,
     origin_date?: string,
@@ -999,7 +1143,7 @@ export function saveTrackingPoint(
         MUTATION_SAVE_TRACKING_POINT,
         {
             journey,
-            status,
+            name,
             bag_tag_no,
             origin,
             origin_date,
@@ -1016,7 +1160,7 @@ export function saveTrackingPointForMultipleBags(
     endpoint: string,
     apiKey: string,
     journey: string,
-    status: string,
+    name: string,
     bags: Array<{
         bag_tag_no: string;
         origin?: string;
@@ -1031,7 +1175,7 @@ export function saveTrackingPointForMultipleBags(
         endpoint,
         apiKey,
         MUTATION_SAVE_TRACKING_POINT_FOR_MULTIPLE_BAGS,
-        { journey, status, bags, required_inputs },
+        { journey, name, bags, required_inputs },
     );
 }
 
@@ -1108,35 +1252,25 @@ export function saveBagImages(
     });
 }
 
-export function saveDamagedBagImages(
-    endpoint: string,
-    apiKey: string,
-    bag_images: Array<{
-        bag_tag_no: string;
-        journey: string;
-        origin: string;
-        origin_date: string;
-        destination: string;
-        destination_date: string;
-        name: string;
-        type: string;
-    }>,
-) {
-    return executeGraphQLRequest(
-        endpoint,
-        apiKey,
-        MUTATION_SAVE_DAMAGED_BAG_IMAGES,
-        { bag_images },
-    );
-}
-
 export function saveVehicle(
     endpoint: string,
     apiKey: string,
     vehicle_number: string,
-    journey?: string,
+    journey: string,
 ) {
     return executeGraphQLRequest(endpoint, apiKey, MUTATION_SAVE_VEHICLE, {
+        vehicle_number,
+        journey,
+    });
+}
+
+export function deleteVehicle(
+    endpoint: string,
+    apiKey: string,
+    vehicle_number: string,
+    journey: string,
+) {
+    return executeGraphQLRequest(endpoint, apiKey, MUTATION_DELETE_VEHICLE, {
         vehicle_number,
         journey,
     });
@@ -1147,13 +1281,14 @@ export function saveTrackingPointsForBagsOnVehicle(
     apiKey: string,
     vehicle_number: string,
     journey: string,
-    status: string,
+    name: string,
+    images?: Array<{ name: string; type: string }>,
 ) {
     return executeGraphQLRequest(
         endpoint,
         apiKey,
         MUTATION_SAVE_TRACKING_POINTS_FOR_BAGS_ON_VEHICLE,
-        { vehicle_number, journey, status },
+        { vehicle_number, journey, name, images },
     );
 }
 
@@ -1208,6 +1343,87 @@ export function reportDamageBag(
         params,
     );
 }
+
+/* ============================= */
+/* TrackedBagsInformation Query  */
+/* ============================= */
+
+export function getTrackedBagsInformationByDate(
+    endpoint: string,
+    apiKey: string,
+    date: string,
+    journey: string,
+) {
+    return executeGraphQLRequest(
+        endpoint,
+        apiKey,
+        QUERY_TRACKED_BAGS_INFORMATION,
+        { date, journey },
+    );
+}
+
+/* ============================= */
+/* ContainerSheet Operations     */
+/* ============================= */
+
+export function getContainerSheetsByOriginDestination(
+    endpoint: string,
+    apiKey: string,
+    params: {
+        origin?: string;
+        origin_date?: string;
+        destination?: string;
+        destination_date?: string;
+    },
+) {
+    return executeGraphQLRequest(
+        endpoint,
+        apiKey,
+        QUERY_CONTAINER_SHEETS,
+        params,
+    );
+}
+
+export function createContainerSheet(
+    endpoint: string,
+    apiKey: string,
+    params: {
+        journey: string;
+        container_type: string; // ContainerTypePhysical
+        origin?: string;
+        origin_date?: string;
+        destination?: string;
+        destination_date?: string;
+        flight_class: string; // FlightClass
+        comment?: string;
+    },
+) {
+    return executeGraphQLRequest(
+        endpoint,
+        apiKey,
+        MUTATION_CREATE_CONTAINER_SHEET,
+        params,
+    );
+}
+
+export function pairContainerSheet(
+    endpoint: string,
+    apiKey: string,
+    params: {
+        journey?: string;
+        container_sheet_id: string;
+        bt_number: string;
+        container_status?: string;
+    },
+) {
+    return executeGraphQLRequest(
+        endpoint,
+        apiKey,
+        MUTATION_PAIR_CONTAINER_SHEET,
+        params,
+    );
+}
+
 // Added getTenBags query (testing / sample data)
 
 /* Wrapper */

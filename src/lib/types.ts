@@ -23,6 +23,9 @@ export enum VehicleAction {
     LOADING = "LOADING",
     UNLOADING = "UNLOADING",
     KEEPING = "KEEPING",
+    CS_LOADING = "CS_LOADING",
+    CS_UNLOADING = "CS_UNLOADING",
+    CS_KEEPING = "CS_KEEPING",
 }
 
 export enum TrackingPointType {
@@ -37,6 +40,29 @@ export enum OriginDestinationType {
     TransferFlight = "TransferFlight",
     SelectionList = "SelectionList",
     Custom = "Custom",
+}
+
+export enum FlightClass {
+    FIRST = "FIRST",
+    BUSINESS = "BUSINESS",
+    PREMIUM_ECONOMY = "PREMIUM_ECONOMY",
+    ECONOMY = "ECONOMY",
+}
+
+export enum ContainerType {
+    BT = "BT",
+    ULD = "ULD",
+}
+
+export enum ContainerTypePhysical {
+    ULD = "ULD",
+    CART = "CART",
+}
+
+export enum ContainerStatus {
+    CREATED = "CREATED",
+    PAIRED = "PAIRED",
+    LOADED_TO_AIRCRAFT = "LOADED_TO_AIRCRAFT",
 }
 
 /* ========= Journey / Config Structures ========= */
@@ -160,6 +186,39 @@ export interface Vehicle {
     journey?: string;
 }
 
+export interface IVehicle {
+    journey: string;
+    vehicle_number: string;
+    number_of_bags: number;
+    created_at: string;
+}
+
+export interface Transporter extends IVehicle {
+    vehicle_number: string;
+    journey: string;
+    number_of_bags: number;
+    created_at: string;
+}
+
+export interface ContainerSheet extends IVehicle {
+    vehicle_number: string;
+    journey: string;
+    number_of_bags: number;
+    created_at: string;
+    container_sheet_id?: string;
+    container_type?: ContainerType;
+    origin?: string;
+    origin_date?: string;
+    destination?: string;
+    destination_date?: string;
+    flight_class?: FlightClass;
+    container_status?: ContainerStatus;
+    bt_number?: string;
+    cargo_hold_number?: string;
+    last_process_ts?: string;
+    comment?: string;
+}
+
 export interface MenuItem {
     journey: string;
     status: string;
@@ -212,6 +271,17 @@ export interface Bag {
     mast_bpm_history?: string[];
     loading_sequence?: string;
     bt_number?: string;
+}
+
+export interface StatusSummary {
+    status?: string;
+    bags?: TrackedBag[];
+}
+
+export interface TrackedBagsInformation {
+    no_of_origins: number;
+    no_of_destinations: number;
+    status_summary: StatusSummary[];
 }
 
 /* ========= Form / UI Data ========= */
@@ -380,4 +450,20 @@ export type UpdateTrackedBagResult = GraphQLResult<{
 
 export type ReportDamageBagResult = GraphQLResult<{
     reportDamageBag: TrackingPoint;
+}>;
+
+export type ContainerSheetsResult = GraphQLResult<{
+    getContainerSheetsByOriginDestination: ContainerSheet[];
+}>;
+
+export type CreateContainerSheetResult = GraphQLResult<{
+    createContainerSheet: ContainerSheet;
+}>;
+
+export type PairContainerSheetResult = GraphQLResult<{
+    pairContainerSheet: ContainerSheet;
+}>;
+
+export type TrackedBagsInformationResult = GraphQLResult<{
+    getTrackedBagsInformationByDate: TrackedBagsInformation;
 }>;
