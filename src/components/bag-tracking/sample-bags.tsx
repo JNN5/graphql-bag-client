@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { format } from "date-fns";
 import { Loader2, Package, Tag } from "lucide-react";
 import Barcode from "@/components/ui/barcode";
 import { Button } from "@/components/ui/button";
@@ -41,16 +40,6 @@ const SampleBags = () => {
             );
         } finally {
             setIsLoading(false);
-        }
-    };
-
-    const formatDate = (dateString: string | undefined) => {
-        if (!dateString) return "N/A";
-
-        try {
-            return format(new Date(dateString), "MMM d, yyyy HH:mm");
-        } catch {
-            return dateString;
         }
     };
 
