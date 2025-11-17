@@ -141,7 +141,7 @@ const TrackedBags = () => {
             </CardHeader>
             <CardContent>
                 {isLoading ? (
-                    <div className="text-center py-4">
+                    <div className="text-center text-white py-4">
                         Loading tracked bags...
                     </div>
                 ) : error ? (

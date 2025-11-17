@@ -53,13 +53,13 @@ const EmptyState = () => (
 );
 
 const LoadingState = () => (
-  <Card className="border-border shadow-md">
+  <Card className="border-border glass shadow-md p-8">
     <CardHeader>
-      <CardTitle className="flex items-center gap-2">
+      <CardTitle className="flex items-center text-white gap-2">
         <span>Processing Request</span>
       </CardTitle>
     </CardHeader>
-    <CardContent className="flex flex-col items-center justify-center p-12">
+    <CardContent className="flex flex-col items-center justify-center p-12 text-white">
       <Loader2 className="h-16 w-16 
       animate-spin mb-4" />
       <p className="text-center text-muted-foreground mt-4">
@@ -70,7 +70,7 @@ const LoadingState = () => (
 );
 
 const ErrorState = ({ message }: { message: string }) => (
-  <Card className="border-border border-destructive/20 shadow-md">
+  <Card className="border-border border-destructive/20 shadow-md glass p-8">
     <CardHeader>
       <CardTitle className="flex items-center gap-2 text-destructive">
         <XCircle className="h-5 w-5" />
@@ -111,28 +111,23 @@ const SuccessState = ({ result }: { result: GraphQLResult<{[key: string]: Tracki
     <Card className="border-border shadow-md">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-green-600">
-          <CheckCircle className="h-5 w-5" />
-          <span>Success</span>
         </CardTitle>
-        <CardDescription>
-          The tracking information was successfully recorded
-        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md bg-green-50 dark:bg-green-950/20 p-4 mb-4">
+        <div className="glass p-4 mb-4">
           <div className="flex">
-            <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 mr-2" />
-            <p className="text-green-700 dark:text-green-400 font-medium">
+            <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 mr-2" />
+            <p className="text-green-400 font-medium">
               Request completed successfully
             </p>
           </div>
         </div>
         
-        <div className="mt-4">
-          <h3 className="font-medium mb-2">Response Details:</h3>
+        <div className="mt-4 glass">
+          <h3 className="font-medium text-white pt-6 mb-2">Response Details:</h3>
           <div className="space-y-3">
             {trackingPoints.map((bag, index) => (
-              <div key={index} className="bg-muted/40 rounded-md p-3">
+              <div key={index} className=" text-white rounded-md p-3">
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium">Bag Tag No:</div>
                   <div>{bag.bag_tag_no}</div>

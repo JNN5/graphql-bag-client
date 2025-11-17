@@ -257,20 +257,8 @@ export interface Bag {
     flight_no: string;
     scheduled_date: string;
     bag_tag_no: string;
-    bag_tag_last_five: string;
-    bag_status: string;
     bag_journey: string;
-    last_process_ts: string;
-    last_user_update_ts?: LastUserUpdateTS;
-    container_sheet_id?: string;
-    cargo_hold_number?: string;
-    is_gatebag?: string;
-    cargo_hold?: string;
-    comment?: string[];
-    message_history?: MessageHistoryFormat[];
-    mast_bpm_history?: string[];
-    loading_sequence?: string;
-    bt_number?: string;
+    bag_message: string;
 }
 
 export interface StatusSummary {

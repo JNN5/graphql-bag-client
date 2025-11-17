@@ -104,7 +104,6 @@ const ApiHeader = () => {
 
                             <DialogFooter>
                                 <Button
-                                    variant="outline"
                                     onClick={() => setIsDialogOpen(false)}
                                 >
                                     Cancel

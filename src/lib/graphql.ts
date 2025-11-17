@@ -132,10 +132,8 @@ const QUERY_TEN_BAGS = `
       flight_no
       scheduled_date
       bag_tag_no
-      bag_tag_last_five
-      bag_status
       bag_journey
-      last_process_ts
+      bag_message
     }
   }
 `;

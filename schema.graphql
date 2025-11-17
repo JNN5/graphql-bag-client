@@ -294,23 +294,24 @@ type StatusSummary @aws_iam @aws_api_key @aws_cognito_user_pools {
 }
 
 type Bag @aws_iam @aws_api_key @aws_cognito_user_pools {
+    bag_tag_no: String!
+    bag_message: String!
     flight_no: String!
     scheduled_date: String!
-    bag_tag_no: String!
-    bag_tag_last_five: String!
-    bag_status: String!
+    # bag_tag_last_five: String!
+    # bag_status: String!
     bag_journey: String!
-    last_process_ts: String!
-    last_user_update_ts: LastUserUpdateTS
-    container_sheet_id: String
-    cargo_hold_number: String
-    is_gatebag: String
-    cargo_hold: String
-    comment: [String]
-    message_history: [MessageHistoryFormat]
-    mast_bpm_history: [String]
-    loading_sequence: String
-    bt_number: String
+    # last_process_ts: String!
+    # last_user_update_ts: LastUserUpdateTS
+    # container_sheet_id: String
+    # cargo_hold_number: String
+    # is_gatebag: String
+    # cargo_hold: String
+    # comment: [String]
+    # message_history: [MessageHistoryFormat]
+    # mast_bpm_history: [String]
+    # loading_sequence: String
+    # bt_number: String
 }
 
 type Mutation {
